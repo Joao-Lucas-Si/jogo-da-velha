@@ -17,7 +17,6 @@ interface Data {
 const clients = new Map<string, WebSocket>()
 
 function onMessage(ws:WebSocket, data: Data) {
-    console.log(data)
     Array.from(clients.values()).forEach(client => client.send(JSON.stringify(data))) 
 }
 

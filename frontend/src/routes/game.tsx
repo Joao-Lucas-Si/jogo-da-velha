@@ -19,10 +19,9 @@ export default function GameRoom() {
 
 
     useEffect(() => {
-        console.log(socket)
         const joinRoom = async () => {
             const response = await fetch(`http://localhost:6969/room/${room}`, {
-                method: "put",
+                method: "post",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -33,7 +32,6 @@ export default function GameRoom() {
                 user1: User,
                 user2?: User
             } = await response.json()
-            console.log(roomData)
             if (roomData.user2) {
                 gameContext.setOutherUser(roomData.user1)
                 gameContext.setRound("outher")
@@ -42,18 +40,13 @@ export default function GameRoom() {
             else {
                 gameContext.setIsLoading(true)
             }
-            console.log(roomData)
         }
         socket.onopen = joinRoom
         socket.onmessage = (event: MessageEvent<string>) => {
             const data:Message|(User & {room: string}) = JSON.parse(event.data)
-            console.log("data", JSON.stringify(data))
             const {room: submitedRoom, ...rest} = data
-            console.log(rest.symbol, gameContext.currentUser.symbol, rest.symbol !== gameContext.currentUser.symbol)
             if (room === submitedRoom && rest.symbol !== gameContext.currentUser.symbol) {
                 if ("row" in rest) {
-                    console.log()
-                    console.log([...gameContext.filleds, rest])
                     gameContext.setFilleds([...gameContext.filleds, rest])
                     gameContext.setRound("current")
                 }
@@ -93,11 +86,9 @@ export default function GameRoom() {
     }, [])
 
     const closeRoom = useCallback(async () => {
-        console.log(room)
-        const response = await fetch(`http://localhost:6969/room/${room}`, {
-            method: "DELETE"
+        const response = await fetch(`http://localhost:6969/room/${room}/delete`, {
+            method: "get"
         })
-        console.log(response)
         if (response.status === 200) {
             resetContext(gameContext)
             navigate("/")
@@ -111,8 +102,8 @@ export default function GameRoom() {
             <h1 className="is-size-1 has-text-primary has-text-centered">{gameContext.currentUser.name} vs {gameContext.outherUser.name}</h1>
             <h3 className="is-size-3 has-text-centered has-text-info">{gameContext.round === "current" ? "sua rodada" : `rodada de: ${gameContext.outherUser.name}`}</h3>
             <div style={{ height: "100%" }} className=" is-flex is-align-items-center is-fex-direction-column is-justify-content-center">
-                <div className="is-flex tile is-ancestor is-flex-direction-column is-justify-content-center" style={{ maxWidth: "50vw", height: "70vh" }}>
-                    { spaces.map((line,i) => <div key={line[i].row} style={{ width: "100%", height: "33%", gap: "1em" }} className="tile is-parent">{line.map(space => <Space socket={socket} key={`${space.row}-${space.column}`} {...space}/>)}</div>) }
+                <div className="is-flex tile is-ancestor  is-justify-content-center" style={{ maxWidth: "50vw", height: "70vh" }}>
+                    { spaces.map((line,i) => <div key={line[i].row} style={{ width: "30vw", height: "33%", gap: "1em" }} className="tile is-parent">{line.map(space => <Space socket={socket} key={`${space.row}-${space.column}`} {...space}/>)}</div>) }
                 </div>
             </div>
             { gameContext.isWin &&

@@ -15,7 +15,7 @@ interface Room {
 
 export default function Rooms() {
     const symbols = ["X", "O", "L"]
-    const [watch, setWatch] = useState<NodeJS.Timeout>()
+    const [watch, setWatch] = useState<number>()
     const gameContext = useContext(GameContext)
     const [rooms, setRoom] = useState<Room[]>([])
 
@@ -71,8 +71,8 @@ export default function Rooms() {
                         </div>
                         <span className="has-text-info">dependendo do símbolo certas partidas não poderão ser acessadas já que os usuários tem que ter símbolos diferentes um do outro</span>
                     </div>
+                   
                     <button onClick={() => {
-                        console.log(JSON.stringify(gameContext.currentUser))
                         fetch("http://localhost:6969/criar-sala", {
                             method: "post",
                             headers: {
@@ -82,7 +82,6 @@ export default function Rooms() {
                         }) 
                         .then(response => response.json())
                         .then((room) => {
-                            console.log(room)
                             navigate(`/${room.id}`)
                         })
                     }} className="button is-link">criar partida</button>

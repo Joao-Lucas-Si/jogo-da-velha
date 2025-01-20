@@ -15,7 +15,7 @@ export default function Space({column, row, socket}: Props) {
 
     return (
         <div 
-            style={{border: "solid 3px #000"}} 
+            style={{border: "solid 3px #000", width: "100%", height: "100%"}} 
             className={`tile is-flex is-justify-content-center is-align-items-center is-size-1 has-text-centered ${(!filled && gameContext.round !== "current" ? "has-background-dark" : "has-background-light")} ${filled?.symbol === gameContext.currentUser.symbol ? "has-text-success" : "has-text-danger"} is-child is-one-third m-0 `} 
             onClick={() => {
             if (!filled && gameContext.round === "current") {

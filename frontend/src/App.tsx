@@ -1,4 +1,4 @@
-import { useState, createContext, useEffect } from 'react'
+import { useState, createContext, useEffect, useReducer } from 'react'
 import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom"
 import Rooms from './routes/rooms'
 import GameRoom from './routes/game'
@@ -40,8 +40,10 @@ export interface GameContext {
   isLoading: boolean,
   setIsLoading: (isLoading: boolean) => void,
   hasDraw: boolean,
+  setTheme: (theme: "dark"|"light") => void,
   setHasDraw: (hasDraw: boolean) => void,
   round: "current"|"outher",
+  theme?: "dark"|"light"
   setRound: (round: "current"|"outher") => void
 }
 
@@ -50,7 +52,10 @@ export const GameContext = createContext<GameContext>({
     name: "",
     symbol: "X"
   },
+  
   isWin: false,
+  setTheme: () => {},
+  theme: undefined,
   isLoss: false,
   setIsLoss: (isLoss) => {},
   setIsWin: (isWin) => {},
@@ -70,6 +75,11 @@ export const GameContext = createContext<GameContext>({
   setRound: (round) => {}
 })
 
+function themeReducer(state: "dark"|"light"|undefined, action: "dark"|"light"|undefined) {
+  if (action) localStorage.setItem("theme", action)
+  return action
+}
+
 function App() {
   const [currentUser, setCurrentUser] = useState<User>({
     name: localStorage.getItem("name") ?? "",
@@ -79,6 +89,8 @@ function App() {
     name: "",
     symbol: "O"
   })
+
+  const [theme, setTheme] = useReducer(themeReducer, localStorage.getItem("theme") as "dark"|"light"|undefined)
 
   const [filleds, setFilleds] = useState<GameContext["filleds"]>([])
 
@@ -98,11 +110,9 @@ function App() {
     localStorage.setItem("symbol", currentUser.symbol)
   }, [currentUser])
 
-
-
   return (
-    <GameContext.Provider value={{ currentUser, setCurrentUser, outherUser, setOutherUser, filleds, setFilleds, isWin, setIsWin, isLoss, setIsLoss, hasDraw, setHasDraw, isLoading, setIsLoading, round, setRound }}>
-      <div style={{ minHeight: "100vh" }} className='is-fullheight'>
+    <GameContext.Provider value={{ currentUser, theme, setTheme, setCurrentUser, outherUser, setOutherUser, filleds, setFilleds, isWin, setIsWin, isLoss, setIsLoss, hasDraw, setHasDraw, isLoading, setIsLoading, round, setRound }}>
+      <div  style={{ minHeight: "100vh" }} className='is-fullheight'>
         <RouterProvider router={routes} />
       </div>
       { isLoading && <div className='modal is-flex'>

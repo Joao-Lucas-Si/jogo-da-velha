@@ -31,7 +31,7 @@ app.get("/disponiveis", (req, res) => {
         )
 })
 
-app.put("/room/:id", (req, res) => {
+app.post("/room/:id", (req, res) => {
     const { id } = req.params
     const room = rooms.find(room => room.id === id)
     if (room) {
@@ -62,7 +62,7 @@ app.post("/criar-sala", (req, res) => {
 })
 
 
-app.delete("/room/:id", (req, res) => {
+app.get("/room/:id/delete", (req, res) => {
     const {id} = req.params
     console.log("delete")
     console.log(rooms)
